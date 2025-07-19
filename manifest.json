@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "GitHub Total Lines Counter",
+  "version": "1.0",
+  "description": "Calculates the total lines of code in a GitHub repository, excluding binary files.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://github.com/*",
+    "https://api.github.com/"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/*/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_title": "GitHub LOC Counter"
+  },
+  "icons": {
+  }
+}
