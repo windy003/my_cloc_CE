@@ -41,27 +41,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "fetchLines") {
     const { owner, repo } = request.data;
 
-    fetch(`https://api.github.com/repos/${owner}/${repo}`)
-      .then(response => {
-        if (!response.ok) throw new Error(`GitHub API error: ${response.statusText}`);
-        return response.json();
-      })
-      .then(data => {
-        const defaultBranch = data.default_branch;
-        return fetch(`https://api.github.com/repos/${owner}/${repo}/zip/${defaultBranch}`);
-      })
-      .then(response => {
-        if (!response.ok) throw new Error(`Failed to download zip: ${response.statusText}`);
-        return response.arrayBuffer();
-      })
-      .then(arrayBuffer => countLinesInZip(arrayBuffer))
-      .then(totalLines => {
-        sendResponse({ totalLines });
-      })
-      .catch(error => {
-        console.error('Error processing repository:', error);
-        sendResponse({ error: error.message });
-      });
+    // 1. Get proxy setting first
+    chrome.storage.local.get('proxy', (storageData) => {
+      const proxyUrl = storageData.proxy;
+
+      // 2. Fetch repo metadata (does not need proxy)
+      fetch(`https://api.github.com/repos/${owner}/${repo}`)
+        .then(response => {
+          if (!response.ok) throw new Error(`GitHub API error: ${response.statusText}`);
+          return response.json();
+        })
+        .then(data => {
+          const defaultBranch = data.default_branch;
+          const downloadUrl = `https://github.com/${owner}/${repo}/archive/refs/heads/${defaultBranch}.zip`;
+          
+          // 3. Use proxy if it exists, otherwise fetch directly
+          const finalUrl = proxyUrl ? `${proxyUrl}/${downloadUrl.replace('https://', '')}` : downloadUrl;
+
+          return fetch(finalUrl);
+        })
+        .then(response => {
+          if (!response.ok) throw new Error(`Failed to download zip: ${response.statusText}`);
+          return response.arrayBuffer();
+        })
+        .then(arrayBuffer => countLinesInZip(arrayBuffer))
+        .then(totalLines => {
+          sendResponse({ totalLines });
+        })
+        .catch(error => {
+          console.error('Error processing repository:', error);
+          sendResponse({ error: error.message });
+        });
+    });
 
     return true; // Indicates that the response is sent asynchronously
   }

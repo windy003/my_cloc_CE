@@ -5,11 +5,13 @@
   "description": "Calculates the total lines of code in a GitHub repository, excluding binary files.",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
     "https://github.com/*",
-    "https://api.github.com/"
+    "https://api.github.com/",
+    "http://127.0.0.1/*"
   ],
   "background": {
     "service_worker": "background.js"

@@ -30,6 +30,35 @@ function injectUI() {
   resultElement.id = RESULT_ID;
   resultElement.style.color = '#6a737d'; // Match GitHub's secondary text color
 
+  const proxyInput = document.createElement('input');
+  proxyInput.type = 'text';
+  proxyInput.placeholder = 'e.g., http://127.0.0.1:33000';
+  proxyInput.style.marginLeft = 'auto'; // Push to the right
+
+  const saveProxyButton = document.createElement('button');
+  saveProxyButton.textContent = 'Save Proxy';
+  saveProxyButton.className = 'btn btn-sm';
+
+  // Load saved proxy on startup
+  chrome.storage.local.get('proxy', (data) => {
+    if (data.proxy) {
+      proxyInput.value = data.proxy;
+    }
+  });
+
+  saveProxyButton.addEventListener('click', () => {
+    const proxyUrl = proxyInput.value.trim();
+    if (proxyUrl) {
+      chrome.storage.local.set({ proxy: proxyUrl }, () => {
+        alert('Proxy saved!');
+      });
+    } else {
+      chrome.storage.local.remove('proxy', () => {
+        alert('Proxy removed!');
+      });
+    }
+  });
+
   // 3. Add event listener to the button
   button.addEventListener('click', () => {
     const pathParts = window.location.pathname.slice(1).split('/');
@@ -61,6 +90,8 @@ function injectUI() {
   // 4. Append elements to the page
   container.appendChild(button);
   container.appendChild(resultElement);
+  container.appendChild(proxyInput);
+  container.appendChild(saveProxyButton);
   
   // Insert after the injection point instead of inside it
   injectionPoint.parentNode.insertBefore(container, injectionPoint.nextSibling);
