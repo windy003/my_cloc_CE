@@ -1,4 +1,4 @@
-const INJECTION_POINT_SELECTOR = 'div.file-navigation';
+const INJECTION_POINT_SELECTOR = '[data-testid="latest-commit-details"], .js-details-container, .repository-content';
 const BUTTON_ID = 'loc-button';
 const RESULT_ID = 'loc-result';
 
@@ -14,12 +14,17 @@ function injectUI() {
   container.style.display = 'flex';
   container.style.alignItems = 'center';
   container.style.gap = '8px';
-  container.style.marginLeft = '16px'; // Add some space
+  container.style.margin = '16px 0';
+  container.style.padding = '12px';
+  container.style.border = '1px solid #d0d7de';
+  container.style.borderRadius = '6px';
+  container.style.backgroundColor = '#f6f8fa';
 
   const button = document.createElement('button');
   button.id = BUTTON_ID;
   button.textContent = 'Count Total Lines';
-  button.className = 'btn btn-sm';
+  button.className = 'btn btn-sm btn-primary';
+  button.style.cursor = 'pointer';
 
   const resultElement = document.createElement('div');
   resultElement.id = RESULT_ID;
@@ -56,7 +61,9 @@ function injectUI() {
   // 4. Append elements to the page
   container.appendChild(button);
   container.appendChild(resultElement);
-  injectionPoint.appendChild(container);
+  
+  // Insert after the injection point instead of inside it
+  injectionPoint.parentNode.insertBefore(container, injectionPoint.nextSibling);
 }
 
 // --- Main Execution ---

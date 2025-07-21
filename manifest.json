@@ -23,6 +23,10 @@
   "action": {
     "default_title": "GitHub LOC Counter"
   },
-  "icons": {
-  }
+  "web_accessible_resources": [
+    {
+      "resources": ["jszip.min.js"],
+      "matches": ["https://github.com/*"]
+    }
+  ]
 }
