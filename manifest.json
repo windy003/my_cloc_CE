@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "GitHub Total Lines Counter",
+  "name": "GitHub Lines of Code Counter",
   "version": "1.0",
-  "description": "Calculates the total lines of code in a GitHub repository, excluding binary files.",
+  "description": "A powerful Chrome extension that calculates total lines of code in GitHub repositories with detailed statistics and language breakdown.",
   "permissions": [
     "activeTab",
     "scripting",
